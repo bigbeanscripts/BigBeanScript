@@ -1,0 +1,92 @@
+local Players = game:GetService("Players")
+local player = Players.LocalPlayer
+local character = player.Character or player.CharacterAdded:Wait()
+local humanoidRootPart = character:WaitForChild("HumanoidRootPart")
+
+-- Create GUI elements
+local screenGui = Instance.new("ScreenGui", player:WaitForChild("PlayerGui"))
+local toggleButton = Instance.new("TextButton", screenGui)
+
+toggleButton.Size = UDim2.new(0, 200, 0, 50)
+toggleButton.Position = UDim2.new(0.5, -100, 0.1, 0) -- Centered at the top
+toggleButton.Text = "Start Teleporting"
+toggleButton.BackgroundColor3 = Color3.fromRGB(255, 85, 85)
+
+local teleporting = false -- Variable to track if teleporting is active
+
+-- Function to break the current breakable
+local function breakCurrentBreakable(breakable)
+    -- Prepare the arguments for breaking
+    local args = {
+        [1] = breakable.Name -- Use the breakable's name for the service call
+    }
+
+    -- Invoke the breakable service to break the object
+    local replicatedStorage = game:GetService("ReplicatedStorage")
+    local breakableService = replicatedStorage:WaitForChild("Packages"):WaitForChild("Knit"):WaitForChild("Services"):WaitForChild("BreakableService")
+    breakableService.RF.HitBreakable:InvokeServer(unpack(args))
+end
+
+-- Function to teleport to breakables
+local function teleportToBreakables()
+    while teleporting do
+        -- Refresh the list of breakables every 0.01 seconds
+        local breakables = workspace.GameObjects.Breakables:GetChildren()
+
+        for _, breakable in ipairs(breakables) do
+            if breakable:IsA("BasePart") then
+                -- Teleport to the current breakable
+                humanoidRootPart.CFrame = breakable.CFrame
+
+                -- Start breaking the current breakable
+                local breakableActive = true
+
+                -- Hit the breakable every 0.01 seconds
+                spawn(function()
+                    while breakableActive and teleporting do
+                        breakCurrentBreakable(breakable)
+                        wait(0.01) -- Hit every 0.01 seconds
+                    end
+                end)
+
+                -- Wait until the breakable is removed from the hierarchy
+                repeat
+                    wait(0.01) -- Check every 0.01 seconds
+                    breakable = workspace.GameObjects.Breakables:FindFirstChild(breakable.Name)
+                until not breakable -- Exit loop when the breakable is gone
+
+                breakableActive = false -- Stop hitting when breakable is gone
+
+                -- Proceed to the next breakable immediately after the current one is destroyed
+                break -- Exit the for loop to check for the next breakable after the current one is destroyed
+            end
+        end
+
+        wait(0.01) -- Check for new breakables every 0.01 seconds if none are available
+    end
+end
+
+-- Function to start teleporting
+local function startTeleporting()
+    teleporting = true
+    toggleButton.Text = "Stop Teleporting"
+    toggleButton.BackgroundColor3 = Color3.fromRGB(85, 255, 85) -- Green when active
+
+    teleportToBreakables() -- Start the teleporting process
+end
+
+-- Function to stop teleporting
+local function stopTeleporting()
+    teleporting = false
+    toggleButton.Text = "Start Teleporting"
+    toggleButton.BackgroundColor3 = Color3.fromRGB(255, 85, 85) -- Red when inactive
+end
+
+-- Toggle button functionality
+toggleButton.MouseButton1Click:Connect(function()
+    if teleporting then
+        stopTeleporting()
+    else
+        startTeleporting()
+    end
+end)
