@@ -126,8 +126,8 @@ local function findClosestBreakable()
         end
     end
 
-    -- Return the closest breakable only if it's within 500 studs
-    if closestDistance <= 500 then
+    -- Return the closest breakable only if it's within 800 studs
+    if closestDistance <= 800 then
         return closestBreakable
     else
         return nil -- Return nil if no breakable is within the distance
