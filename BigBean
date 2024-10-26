@@ -1,7 +1,124 @@
+-- Create a ScreenGui for our minimize button
+local MinimizeGui = Instance.new("ScreenGui")
+MinimizeGui.Name = "MinimizeGui"
+MinimizeGui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
+MinimizeGui.ResetOnSpawn = false
+
+-- Create the minimize button with centered positioning
+local MinimizeButton = Instance.new("TextButton")
+MinimizeButton.Name = "MinimizeButton"
+MinimizeButton.Parent = MinimizeGui
+MinimizeButton.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+MinimizeButton.BorderColor3 = Color3.fromRGB(50, 50, 50)
+MinimizeButton.AnchorPoint = Vector2.new(0.5, 0.5)
+MinimizeButton.Position = UDim2.new(0.5, 0, 0.5, 0)
+MinimizeButton.Size = UDim2.new(0, 80, 0, 40)
+MinimizeButton.Font = Enum.Font.GothamBold
+MinimizeButton.Text = "Close"
+MinimizeButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+MinimizeButton.TextSize = 16.000
+
+-- Add corner radius
+local UICorner = Instance.new("UICorner")
+UICorner.CornerRadius = UDim.new(0, 6)
+UICorner.Parent = MinimizeButton
+
+-- Create X button for removal
+local CloseButton = Instance.new("TextButton")
+CloseButton.Name = "CloseButton"
+CloseButton.Parent = MinimizeButton
+CloseButton.BackgroundTransparency = 1
+CloseButton.Position = UDim2.new(1, -20, 0, 0)
+CloseButton.Size = UDim2.new(0, 20, 0, 20)
+CloseButton.Font = Enum.Font.GothamBold
+CloseButton.Text = "×"
+CloseButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+CloseButton.TextSize = 16.000
+CloseButton.ZIndex = 2
+
+-- Close button functionality
+CloseButton.MouseButton1Click:Connect(function()
+    -- Destroy the MinimizeButton and CloseButton
+    MinimizeButton:Destroy()
+    CloseButton:Destroy()
+    -- Optionally, destroy the entire GUI if needed
+    MinimizeGui:Destroy()
+end)
+
+
+
+-- Make button draggable
+local UserInputService = game:GetService("UserInputService")
+local dragging
+local dragStart
+local startPos
+
+MinimizeButton.InputBegan:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 then
+        dragging = true
+        dragStart = input.Position
+        startPos = MinimizeButton.Position
+        
+        input.Changed:Connect(function()
+            if input.UserInputState == Enum.UserInputState.End then
+                dragging = false
+            end
+        end)
+    end
+end)
+
+UserInputService.InputChanged:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseMovement and dragging then
+        local delta = input.Position - dragStart
+        MinimizeButton.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+    end
+end)
+
+-- Add hover effects for main button
+MinimizeButton.MouseEnter:Connect(function()
+    game:GetService("TweenService"):Create(MinimizeButton, TweenInfo.new(0.2), {
+        BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+    }):Play()
+end)
+
+MinimizeButton.MouseLeave:Connect(function()
+    game:GetService("TweenService"):Create(MinimizeButton, TweenInfo.new(0.2), {
+        BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+    }):Play()
+end)
+
+-- Add hover effects for close button
+CloseButton.MouseEnter:Connect(function()
+    game:GetService("TweenService"):Create(CloseButton, TweenInfo.new(0.2), {
+        TextColor3 = Color3.fromRGB(255, 100, 100)
+    }):Play()
+end)
+
+CloseButton.MouseLeave:Connect(function()
+    game:GetService("TweenService"):Create(CloseButton, TweenInfo.new(0.2), {
+        TextColor3 = Color3.fromRGB(255, 255, 255)
+    }):Play()
+end)
+
+-- Add shadow
+local Shadow = Instance.new("ImageLabel")
+Shadow.Name = "Shadow"
+Shadow.AnchorPoint = Vector2.new(0.5, 0.5)
+Shadow.BackgroundTransparency = 1
+Shadow.Position = UDim2.new(0.5, 0, 0.5, 0)
+Shadow.Size = UDim2.new(1, 10, 1, 10)
+Shadow.ImageColor3 = Color3.fromRGB(0, 0, 0)
+Shadow.ImageTransparency = 0.5
+Shadow.Image = "rbxassetid://7912134082"
+Shadow.Parent = MinimizeButton
+Shadow.ZIndex = MinimizeButton.ZIndex - 1
+
+-- Load Fluent UI
 local Fluent = loadstring(game:HttpGet("https://github.com/dawid-scripts/Fluent/releases/latest/download/main.lua"))()
 local SaveManager = loadstring(game:HttpGet("https://raw.githubusercontent.com/dawid-scripts/Fluent/master/Addons/SaveManager.lua"))()
 local InterfaceManager = loadstring(game:HttpGet("https://raw.githubusercontent.com/dawid-scripts/Fluent/master/Addons/InterfaceManager.lua"))()
 
+-- Create window with destroy callback
 local Window = Fluent:CreateWindow({
     Title = "Bean Hub",
     SubTitle = "By Big Bean",
@@ -9,30 +126,59 @@ local Window = Fluent:CreateWindow({
     Size = UDim2.fromOffset(580, 460),
     Acrylic = true,
     Theme = "Dark",
-    MinimizeKey = Enum.KeyCode.LeftControl
+    MinimizeKey = Enum.KeyCode.LeftControl,
+    OnDestroy = function()
+        local fadeOut = game:GetService("TweenService"):Create(MinimizeGui, TweenInfo.new(0.5), {
+            Transparency = 1
+        })
+        fadeOut:Play()
+        fadeOut.Completed:Connect(function()
+            MinimizeGui:Destroy()
+        end)
+    end
 })
 
 -- Tabs
 local Tabs = {
-    Halloween = Window:AddTab({ Title = "Halloween", Icon = "ghost"}),
+    Halloween = Window:AddTab({ Title = "Halloween", Icon = "ghost" }),
     Settings = Window:AddTab({ Title = "Settings", Icon = "settings" }),
     PlayerSettings = Window:AddTab({ Title = "Player Settings", Icon = "user" }),
-    Keybinds  = Window:AddTab({ Title = "Keybinds", Icon = "keyboard" }),
+    Keybinds = Window:AddTab({ Title = "Keybinds", Icon = "keyboard" }),
     AutoTrain = Window:AddTab({ Title = "Auto Train", Icon = "axe" }),
     AutoFight = Window:AddTab({ Title = "Auto Fight", Icon = "angry" }),
     Eggs = Window:AddTab({ Title = "Eggs", Icon = "egg" }),
     Machines = Window:AddTab({ Title = "Machines", Icon = "star" }),
     Misc = Window:AddTab({ Title = "Misc", Icon = "shuffle" })
 }
+
+-- Initialize state
+local isMinimized = false
+Window:Minimize(false)
+
+-- Regular minimize/maximize functionality
+MinimizeButton.MouseButton1Click:Connect(function()
+    isMinimized = not isMinimized
+    Window:Minimize(isMinimized)
+
+    local textTween = game:GetService("TweenService"):Create(MinimizeButton, TweenInfo.new(0.2), {
+        TextTransparency = 1
+    })
+    
+    textTween:Play()
+    textTween.Completed:Connect(function()
+        MinimizeButton.Text = isMinimized and "Open" or "Close"
+        game:GetService("TweenService"):Create(MinimizeButton, TweenInfo.new(0.2), {
+            TextTransparency = 0
+        }):Play()
+    end)
+end)
+
 SaveManager:SetLibrary(Fluent)
 InterfaceManager:SetLibrary(Fluent)
-
--- Ignore keys that are used by ThemeManager.
 SaveManager:IgnoreThemeSettings()
 SaveManager:SetIgnoreIndexes({})
 InterfaceManager:SetFolder("FluentScriptHub")
 SaveManager:SetFolder("FluentScriptHub/specific-game")
-
 InterfaceManager:BuildInterfaceSection(Tabs.Settings)
 SaveManager:BuildConfigSection(Tabs.Settings)
 
@@ -40,12 +186,9 @@ Window:SelectTab(1)
 
 Fluent:Notify({
     Title = "Fluent",
-    Content = "The script has been loaded.",
+    Content = "Script loaded! Click button to toggle UI, click X to close.",
     Duration = 8
-
-    
 })
-
 
 
 local Misc = Tabs.Misc
@@ -126,8 +269,8 @@ local function findClosestBreakable()
         end
     end
 
-    -- Return the closest breakable only if it's within 800 studs
-    if closestDistance <= 800 then
+    -- Return the closest breakable only if it's within 500 studs
+    if closestDistance <= 500 then
         return closestBreakable
     else
         return nil -- Return nil if no breakable is within the distance
@@ -384,6 +527,67 @@ Tabs.Halloween:AddParagraph({
     Content = "If you want Ghost Hunting to break the ghosts, make sure to turn on the Auto break Breakables toggle!"
 })
 
+local limitedMerchant = require(game:GetService("ReplicatedStorage").Data.LimitedMerchant)
+
+-- Function to collect item details from the LimitedMerchant table
+local function collectItemDetails(tbl, merchantName, titles)
+    for key, value in pairs(tbl) do
+        -- Check if the value is a table
+        if type(value) == "table" then
+            -- Update the merchant name if it ends with "Merchant"
+            if string.match(key, "Merchant$") then
+                merchantName = key  -- Store the current merchant name
+            end
+
+            -- Now, check for Title, Price, and Currency within this merchant's table
+            if value.Title then
+                local itemDetails = merchantName .. ": " .. tostring(value.Title)
+
+                if value.Price then
+                    itemDetails = itemDetails .. " (" .. tostring(value.Price)  -- Add price to the details
+                    
+                    -- Check if Currency is a table
+                    if value.Currency and type(value.Currency) ~= "table" then 
+                        itemDetails = itemDetails .. " " .. tostring(value.Currency) .. ")"  -- Add currency to the details
+                    else
+                        itemDetails = itemDetails .. " Currency not specified)"  -- Handle missing or table currency
+                    end
+                else
+                    itemDetails = itemDetails .. " (Price not specified)"  -- Handle missing price
+                end
+                
+                table.insert(titles, itemDetails)  -- Store the item details with merchant name
+            else
+                print("Warning: No Title found for merchant: " .. merchantName)
+            end
+
+            -- Continue searching in nested tables
+            collectItemDetails(value, merchantName, titles)  -- Pass the merchant name down
+        end
+    end
+end
+
+-- Collect item details from the LimitedMerchant module
+local titles = {}
+collectItemDetails(limitedMerchant, nil, titles)
+
+-- Debugging: Print the collected titles to verify correctness
+print("Collected Titles with Prices and Currencies:")
+for _, title in ipairs(titles) do
+    print(title)
+end
+
+-- Assuming you already have a Halloween tab created
+local HalloweenTab = Tabs.Halloween  -- Replace with your actual Halloween tab reference
+
+-- Create a multi-dropdown in the Halloween tab using the collected item names
+local MultiDropdown = HalloweenTab:AddDropdown("MultiDropdown", {
+    Title = "Select Your Halloween Items",
+    Description = "You can select multiple values.",
+    Values = titles,
+    Multi = true,
+    Default = {},  -- Set default values if needed
+})
 
 
 
