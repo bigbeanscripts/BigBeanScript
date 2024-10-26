@@ -557,9 +557,7 @@ local function collectItemDetails(tbl, merchantName, titles)
                 end
                 
                 table.insert(titles, itemDetails)  -- Store the item details with merchant name
-            else
-                print("Warning: No Title found for merchant: " .. merchantName)
-            end
+             end
 
             -- Continue searching in nested tables
             collectItemDetails(value, merchantName, titles)  -- Pass the merchant name down
@@ -574,7 +572,6 @@ collectItemDetails(limitedMerchant, nil, titles)
 -- Debugging: Print the collected titles to verify correctness
 print("Collected Titles with Prices and Currencies:")
 for _, title in ipairs(titles) do
-    print(title)
 end
 
 -- Assuming you already have a Halloween tab created
