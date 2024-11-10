@@ -1734,7 +1734,7 @@ local function startAutoHatchEventEgg()
             eventService:InvokeServer(unpack(args))
         end
 
-        wait(0.01) -- Adjust this delay as needed
+        wait(3.5) -- Adjust this delay as needed
     end
 end
 
