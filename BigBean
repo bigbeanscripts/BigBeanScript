@@ -2,8 +2,8 @@ local Fluent = loadstring(game:HttpGet("https://github.com/dawid-scripts/Fluent/
 
 -- UI Setup
 local Window = Fluent:CreateWindow({
-    Title = "Egg Hub",
-    SubTitle = "By Big Bean",
+    Title = "New Year event egg",
+    SubTitle = "By Duckie",
     TabWidth = 160,
     Size = UDim2.fromOffset(580, 460),
     Acrylic = true,
@@ -21,7 +21,7 @@ local Tab = Window:AddTab({
 })
 
 -- Create Section
-local Section = Tab:AddSection("Auto Egg")
+local Section = Tab:AddSection("2025 New year egg")
 
 -- Add Toggle
 local Toggle = Section:AddToggle("AutoEgg", {
