@@ -1,142 +1,18 @@
--- Finished 
-local MinimizeGui = Instance.new("ScreenGui")
-MinimizeGui.Name = "MinimizeGui"
-MinimizeGui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
-MinimizeGui.ResetOnSpawn = false
-
--- Create the minimize button with centered positioning
-local MinimizeButton = Instance.new("TextButton")
-MinimizeButton.Name = "MinimizeButton"
-MinimizeButton.Parent = MinimizeGui
-MinimizeButton.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
-MinimizeButton.BorderColor3 = Color3.fromRGB(50, 50, 50)
-MinimizeButton.AnchorPoint = Vector2.new(0.5, 0.5)
-MinimizeButton.Position = UDim2.new(0.5, 0, 0.5, 0)
-MinimizeButton.Size = UDim2.new(0, 80, 0, 40)
-MinimizeButton.Font = Enum.Font.GothamBold
-MinimizeButton.Text = "Close"
-MinimizeButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-MinimizeButton.TextSize = 16.000
-
--- Add corner radius
-local UICorner = Instance.new("UICorner")
-UICorner.CornerRadius = UDim.new(0, 6)
-UICorner.Parent = MinimizeButton
-
--- Create X button for removal
-local CloseButton = Instance.new("TextButton")
-CloseButton.Name = "CloseButton"
-CloseButton.Parent = MinimizeButton
-CloseButton.BackgroundTransparency = 1
-CloseButton.Position = UDim2.new(1, -20, 0, 0)
-CloseButton.Size = UDim2.new(0, 20, 0, 20)
-CloseButton.Font = Enum.Font.GothamBold
-CloseButton.Text = "×"
-CloseButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-CloseButton.TextSize = 16.000
-CloseButton.ZIndex = 2
-
--- Close button functionality
-CloseButton.MouseButton1Click:Connect(function()
-    -- Destroy the MinimizeButton and CloseButton
-    MinimizeButton:Destroy()
-    CloseButton:Destroy()
-    -- Optionally, destroy the entire GUI if needed
-    MinimizeGui:Destroy()
-end)
+local Library = loadstring(game:HttpGetAsync("https://github.com/ActualMasterOogway/Fluent-Renewed/releases/latest/download/Fluent.luau"))()
+local SaveManager = loadstring(game:HttpGetAsync("https://raw.githubusercontent.com/ActualMasterOogway/Fluent-Renewed/master/Addons/SaveManager.luau"))()
+local InterfaceManager = loadstring(game:HttpGetAsync("https://raw.githubusercontent.com/ActualMasterOogway/Fluent-Renewed/master/Addons/InterfaceManager.luau"))()
 
 
-
--- Make button draggable
-local UserInputService = game:GetService("UserInputService")
-local dragging
-local dragStart
-local startPos
-
-MinimizeButton.InputBegan:Connect(function(input)
-    if input.UserInputType == Enum.UserInputType.MouseButton1 then
-        dragging = true
-        dragStart = input.Position
-        startPos = MinimizeButton.Position
-        
-        input.Changed:Connect(function()
-            if input.UserInputState == Enum.UserInputState.End then
-                dragging = false
-            end
-        end)
-    end
-end)
-
-UserInputService.InputChanged:Connect(function(input)
-    if input.UserInputType == Enum.UserInputType.MouseMovement and dragging then
-        local delta = input.Position - dragStart
-        MinimizeButton.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
-    end
-end)
-
--- Add hover effects for main button
-MinimizeButton.MouseEnter:Connect(function()
-    game:GetService("TweenService"):Create(MinimizeButton, TweenInfo.new(0.2), {
-        BackgroundColor3 = Color3.fromRGB(40, 40, 40)
-    }):Play()
-end)
-
-MinimizeButton.MouseLeave:Connect(function()
-    game:GetService("TweenService"):Create(MinimizeButton, TweenInfo.new(0.2), {
-        BackgroundColor3 = Color3.fromRGB(30, 30, 30)
-    }):Play()
-end)
-
--- Add hover effects for close button
-CloseButton.MouseEnter:Connect(function()
-    game:GetService("TweenService"):Create(CloseButton, TweenInfo.new(0.2), {
-        TextColor3 = Color3.fromRGB(255, 100, 100)
-    }):Play()
-end)
-
-CloseButton.MouseLeave:Connect(function()
-    game:GetService("TweenService"):Create(CloseButton, TweenInfo.new(0.2), {
-        TextColor3 = Color3.fromRGB(255, 255, 255)
-    }):Play()
-end)
-
--- Add shadow
-local Shadow = Instance.new("ImageLabel")
-Shadow.Name = "Shadow"
-Shadow.AnchorPoint = Vector2.new(0.5, 0.5)
-Shadow.BackgroundTransparency = 1
-Shadow.Position = UDim2.new(0.5, 0, 0.5, 0)
-Shadow.Size = UDim2.new(1, 10, 1, 10)
-Shadow.ImageColor3 = Color3.fromRGB(0, 0, 0)
-Shadow.ImageTransparency = 0.5
-Shadow.Image = "rbxassetid://7912134082"
-Shadow.Parent = MinimizeButton
-Shadow.ZIndex = MinimizeButton.ZIndex - 1
-
--- Load Fluent UI
-local Fluent = loadstring(game:HttpGet("https://github.com/dawid-scripts/Fluent/releases/latest/download/main.lua"))()
-local SaveManager = loadstring(game:HttpGet("https://raw.githubusercontent.com/dawid-scripts/Fluent/master/Addons/SaveManager.lua"))()
-local InterfaceManager = loadstring(game:HttpGet("https://raw.githubusercontent.com/dawid-scripts/Fluent/master/Addons/InterfaceManager.lua"))()
-
--- Create window with destroy callback
-local Window = Fluent:CreateWindow({
-    Title = "Bean Hub",
+local Window = Library:Window{
+    Title = "Arm Wrestling Simulator",
     SubTitle = "By Duckie",
     TabWidth = 160,
-    Size = UDim2.fromOffset(580, 460),
+    Size =  UDim2.fromOffset(580, 460),
+    Resize = false, 
     Acrylic = true,
-    Theme = "Dark",
-    MinimizeKey = Enum.KeyCode.LeftControl,
-    OnDestroy = function()
-        local fadeOut = game:GetService("TweenService"):Create(MinimizeGui, TweenInfo.new(0.5), {
-            Transparency = 1
-        })
-        fadeOut:Play()
-        fadeOut.Completed:Connect(function()
-            MinimizeGui:Destroy()
-        end)
-    end
-})
+    Theme = "Vynixu",
+    MinimizeKey = Enum.KeyCode.LeftShift
+}
 
 -- Constants
 local SEEDS = {
@@ -178,9 +54,8 @@ local UPGRADE_ITEMS = {
 
 local Tabs = {
     Settings = Window:AddTab({ Title = "Settings", Icon = "settings" }),
-    Event = Window:AddTab({ Title = "Ninja Event", Icon = "sword" }),
+    Event = Window:AddTab({ Title = "Event", Icon = "clock" }),
     AutoFight = Window:AddTab({ Title = "Auto Train/Fight", Icon = "crown" }),
-    SuperRB = Window:AddTab({ Title = "Rebirth", Icon = "recycle" }),
     Eggs = Window:AddTab({ Title = "Eggs", Icon = "egg" }),
     Machines = Window:AddTab({ Title = "Machines", Icon = "star" }),
     Teleport = Window:AddTab({ Title = "Teleport", Icon = "rocket" }),
@@ -189,58 +64,19 @@ local Tabs = {
 }
 
 
--- Initialize state
-local isMinimized = false
-Window:Minimize(false)
 
--- Regular minimize/maximize functionality
-MinimizeButton.MouseButton1Click:Connect(function()
-    isMinimized = not isMinimized
-    Window:Minimize(isMinimized)
 
-    local textTween = game:GetService("TweenService"):Create(MinimizeButton, TweenInfo.new(0.2), {
-        TextTransparency = 1
-    })
-    
-    textTween:Play()
-    textTween.Completed:Connect(function()
-        MinimizeButton.Text = isMinimized and "Close" or "Open"
-        game:GetService("TweenService"):Create(MinimizeButton, TweenInfo.new(0.2), {
-            TextTransparency = 0
-        }):Play()
-    end)
-end)
+-- Create SuperRB Section
+local EventSection = Tabs.Event:AddSection("Rewind Event")
 
-SaveManager:SetLibrary(Fluent)
-InterfaceManager:SetLibrary(Fluent)
-SaveManager:IgnoreThemeSettings()
-SaveManager:SetIgnoreIndexes({})
-InterfaceManager:SetFolder("FluentScriptHub")
-SaveManager:SetFolder("FluentScriptHub/specific-game")
-InterfaceManager:BuildInterfaceSection(Tabs.Settings)
-SaveManager:BuildConfigSection(Tabs.Settings)
-
-Window:SelectTab(1)
-
-Fluent:Notify({
-    Title = "Fluent",
-    Content = "Script loaded! Click button to toggle UI, click X to close.",
-    Duration = 8
-})
-
-Tabs.Event:AddButton({
-    Title = "Ninja Event Script",
-    Description = "Load my Ninja Event script",
+-- Add Load Script Button
+EventSection:AddButton({
+    Title = "Load Event Script",
+    Description = "Loads my Rewind Event script",
     Callback = function()
         loadstring(game:HttpGet("https://raw.githubusercontent.com/bigbeanscripts/Prison-Event/refs/heads/main/event"))()
     end
 })
-
-Tabs.Event:AddParagraph({
-    Title = "Note",
-    Content = "This script creates a minimize button in the center of your screen. If you have other GUIs open, you may need to move them first to see this button. The button is draggable - click and hold to move it to a better position."
-})
-
 
 
 
@@ -278,11 +114,6 @@ local function GetBestQualifyingBag(player)
         end
     end
     
-    print("Best Qualifying Bag:")
-    print("Zone:", zone)
-    print("Tier:", bestTier)
-    print("Your Strength:", knuckleStrength)
-    print("Required:", highestRequired)
     
     return zone, bestTier
 end
@@ -527,21 +358,24 @@ AutoTrainPullUpsToggle:OnChanged(function()
     end
 end)
 
+
+-- UI section
 local FightSection = Tabs.AutoFight:AddSection("Auto Fight")
 
 local modelNames = {}
-local models = {}
+local npcLocations = {} -- Store model locations for reference
 local armWrestlingFolder = workspace.GameObjects.ArmWrestling
 
+-- Populate model names for dropdown
 local function findModels(folder)
     for _, item in pairs(folder:GetChildren()) do
-        if item:IsA("Folder") and item.Name ~= "PVP" then
+        if item:IsA("Folder") and item.Name ~= "PVP" and item.Name ~= "6_OLD" then
             local npcFolder = item:FindFirstChild("NPC")
             if npcFolder then
                 for _, npc in pairs(npcFolder:GetChildren()) do
                     if npc:IsA("Model") then
-                        table.insert(models, npc)
                         table.insert(modelNames, npc.Name)
+                        npcLocations[npc.Name] = {folder = item.Name, npc = npc}
                     end
                 end
             end
@@ -549,90 +383,222 @@ local function findModels(folder)
     end
 end
 
+-- Sort dropdown options alphabetically
 local function sortModels()
-    table.sort(models, function(a, b)
-        return a.Name < b.Name
-    end)
     table.sort(modelNames)
 end
 
 findModels(armWrestlingFolder)
 sortModels()
 
--- Reordered UI Elements (Dropdown at top)
+-- Dropdown for selecting boss
 local modelDropdown = Tabs.AutoFight:AddDropdown("ModelDropdown", {
     Title = "Select Boss",
     Values = modelNames,
     Multi = false,
-    Default = modelNames[1],
+    Searchable = true,
+    Default = modelNames[1] or "",
 })
 
-local function getFolderNumber(bossName)
-    for _, folder in pairs(armWrestlingFolder:GetChildren()) do
-        if folder:IsA("Folder") and folder:FindFirstChild("NPC") then
-            if folder.NPC:FindFirstChild(bossName) then
-                return folder.Name
+-- Auto Fight logic
+local AutoFightToggle = Tabs.AutoFight:AddToggle("AutoFight", {
+    Title = "Auto Fight",
+    Description = "This is the fastest in the game, beating 5x faster then normal. Turn on the auto fight button on the bottom, to make it even faster (infinite click speed).",
+    Default = false
+})
+
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local EndFightSignal = ReplicatedStorage.Packages.Knit.Services.ArmWrestleService.RE.EndFightSignal
+
+-- Load required modules & controllers
+local Knit = require(game:GetService("ReplicatedStorage").Packages.Knit)
+local Players = game:GetService("Players")
+local LocalPlayer = Players.LocalPlayer
+
+local ArmWrestleController = Knit.GetController("ArmWrestleController")
+local AutoUIController = Knit.GetController("AutoUIController")
+
+-- Variables for storing original values to restore when toggle is off
+local originalNPCPower = nil
+local originalNPCCps = nil
+local originalMouseClick = nil
+local originalStartFight = nil
+local originalUpdateFight = nil
+local originalIncrementPower = nil
+
+-- Function to modify game controllers when toggle is on
+local function enableCheats()
+    -- Store original values for restoration later
+    if ArmWrestleController then
+        originalNPCPower = ArmWrestleController.NPCPower
+        originalNPCCps = ArmWrestleController.NPCCps
+        originalMouseClick = ArmWrestleController.MouseClick
+        originalStartFight = ArmWrestleController.StartFight
+        originalUpdateFight = ArmWrestleController.UpdateFight
+        originalIncrementPower = ArmWrestleController.IncrementPower
+        
+        -- Apply cheats
+        ArmWrestleController.NPCPower = 0
+        ArmWrestleController.NPCCps = 0
+
+        ArmWrestleController.MouseClick = function(arg1, arg2)
+            pcall(function()
+                originalMouseClick(arg1, arg2)
+                ArmWrestleController.Health = ArmWrestleController.MaxHealth - 0.001
+                if ArmWrestleController.UpdatingPower then
+                    pcall(function() FightUIController.UpdateUI() end)
+                    pcall(function() FightArmsController.UpdateArms() end)
+                end
+            end)
+        end
+
+        ArmWrestleController.StartFight = function(self, podium, data, customMatchData)
+            pcall(function()
+                originalStartFight(self, podium, data, customMatchData)
+                ArmWrestleController.IsStarted = true
+                ArmWrestleController.Health = ArmWrestleController.MaxHealth - 0.001
+                local startTime = LocalPlayer:FindFirstChild("PlayerGui")
+                    and LocalPlayer.PlayerGui:FindFirstChild("Fighting")
+                    and LocalPlayer.PlayerGui.Fighting:FindFirstChild("StartTime")
+                if startTime then
+                    startTime.Text = "GO!"
+                    startTime.Visible = false
+                end
+                pcall(function() FightUIController.UpdateUI() end)
+                pcall(function() FightArmsController.UpdateArms() end)
+            end)
+        end
+
+        ArmWrestleController.UpdateFight = function(self)
+            task.spawn(function()
+                while ArmWrestleController.Fighting and ArmWrestleController.IsStarted do
+                    pcall(function()
+                        ArmWrestleController.Health = ArmWrestleController.MaxHealth - 0.001
+                        FightUIController.UpdateUI()
+                    end)
+                    task.wait(0.01)
+                end
+            end)
+        end
+
+        ArmWrestleController.IncrementPower = function(self, amount)
+            pcall(function()
+                if amount > 0 then
+                    ArmWrestleController.Health = ArmWrestleController.Health + amount
+                    if ArmWrestleController.Health > ArmWrestleController.MaxHealth then
+                        ArmWrestleController.Health = ArmWrestleController.MaxHealth - 0.001
+                    end
+                end
+            end)
+        end
+    end
+    
+    -- Set click speed to extreme
+    if AutoUIController then
+        AutoUIController.ClicksPerSec = 20e10
+    end
+end
+
+-- Function to restore original controller methods
+local function disableCheats()
+    if ArmWrestleController then
+        -- Restore original values
+        if originalNPCPower then ArmWrestleController.NPCPower = originalNPCPower end
+        if originalNPCCps then ArmWrestleController.NPCCps = originalNPCCps end
+        if originalMouseClick then ArmWrestleController.MouseClick = originalMouseClick end
+        if originalStartFight then ArmWrestleController.StartFight = originalStartFight end
+        if originalUpdateFight then ArmWrestleController.UpdateFight = originalUpdateFight end
+        if originalIncrementPower then ArmWrestleController.IncrementPower = originalIncrementPower end
+    end
+    
+    -- Restore normal click speed
+    if AutoUIController then
+        AutoUIController.ClicksPerSec = 12 -- Reset to default value
+    end
+end
+
+local critHitLoop = nil
+local CritHit = ReplicatedStorage.Packages.Knit.Services.ArmWrestleService.RF.RequestCritHit
+
+local lastFightEnded = true
+
+EndFightSignal.OnClientEvent:Connect(function()
+    lastFightEnded = true
+end)
+
+-- Function to get NPC reference for selected boss
+local function getNPCReference(selectedName)
+    for folderName, folder in pairs(armWrestlingFolder:GetChildren()) do
+        if folder:IsA("Folder") and folder.Name ~= "PVP" and folder.Name ~= "6_OLD" then
+            local npcFolder = folder:FindFirstChild("NPC")
+            if npcFolder and npcFolder:FindFirstChild(selectedName) then
+                return npcFolder:FindFirstChild(selectedName)
             end
         end
     end
     return nil
 end
 
--- Auto Fight in middle
-local AutoFightToggle = Tabs.AutoFight:AddToggle("AutoFight", {Title = "Auto Fight", Default = false })
+local autoFightLoop = nil
+
 AutoFightToggle:OnChanged(function()
     if AutoFightToggle.Value then
-        while AutoFightToggle.Value do
-            local selectedBoss = modelDropdown.Value
-            if selectedBoss then
-                local folderNumber = getFolderNumber(selectedBoss)
-                if folderNumber then
-                    local npcTable = workspace.GameObjects.ArmWrestling[folderNumber].NPC[selectedBoss].Table
-                    
-                    local args = {
-                        [1] = selectedBoss,
-                        [2] = npcTable,
-                        [3] = folderNumber
-                    }
-
-                    game:GetService("ReplicatedStorage").Packages.Knit.Services.ArmWrestleService.RE.onEnterNPCTable:FireServer(unpack(args))
-                end
+        enableCheats()
+        
+        -- Start crit hit spam
+        critHitLoop = task.spawn(function()
+            while AutoFightToggle.Value do
+                pcall(function()
+                    CritHit:InvokeServer()
+                end)
+                task.wait(0.001)
             end
-            wait(2) -- Changed to 2 seconds
+        end)
+        
+        -- Start auto fight loop
+        autoFightLoop = spawn(function()
+            while AutoFightToggle.Value do
+                local selectedName = modelDropdown.Value
+                
+                if selectedName and lastFightEnded then
+                    lastFightEnded = false
+                    
+                    -- Find the NPC model in the workspace
+                    local npcModel = getNPCReference(selectedName)
+                    
+                    if npcModel then
+                        local args = {
+                            [1] = npcModel
+                        }
+                        
+                        pcall(function()
+                            game:GetService("ReplicatedStorage").Packages.Knit.Services.ArmWrestleService.RF.RequestStartFight:InvokeServer(unpack(args))
+                        end)
+                    end
+                end
+
+                task.wait(0.1)
+            end
+        end)
+    else
+        -- Cancel the crit hit loop
+        if critHitLoop then
+            task.cancel(critHitLoop)
+            critHitLoop = nil
         end
+        
+        -- Cancel the auto fight loop
+        if autoFightLoop then
+            task.cancel(autoFightLoop)
+            autoFightLoop = nil
+        end
+        
+        -- Restore original game values
+        disableCheats()
     end
 end)
 
--- Auto Click at bottom
-local AutoClickToggle = Tabs.AutoFight:AddToggle("AutoClick", {Title = "Auto Click", Default = false })
-AutoClickToggle:OnChanged(function()
-    if AutoClickToggle.Value then
-        while AutoClickToggle.Value do
-            game:GetService("ReplicatedStorage").Packages.Knit.Services.ArmWrestleService.RE.onClickRequest:FireServer()
-            wait(0.1) -- Changed to 0.1 seconds
-        end
-    end
-end)
 
-modelDropdown:OnChanged(function(Value) end)
-
--- Create SuperRB Section
-local SuperRBSection = Tabs.SuperRB:AddSection("Super/Normal Rebirths")
-
--- Add Load Script Button
-SuperRBSection:AddButton({
-    Title = "Load Rebirth Script",
-    Description = "Loads my Rebirth script",
-    Callback = function()
-        loadstring(game:HttpGet("https://raw.githubusercontent.com/bigbeanscripts/SR/refs/heads/main/SuperRebirth"))()
-    end
-})
-
--- Add Note Paragraph
-SuperRBSection:AddParagraph({
-    Title = "Note",
-    Content = "For this to work, use the auto train code. For the best result use Barbells while running this script!"
-})
 
 
 
@@ -717,12 +683,47 @@ local function toggleAutoHatch(value)
 end
 
 
+-- Function to teleport the player to the selected egg's model world pivot
+local function teleportToSelectedEgg()
+    local player = game.Players.LocalPlayer
+    local character = player.Character or player.CharacterAdded:Wait()
+    local humanoidRootPart = character:WaitForChild("HumanoidRootPart")
+
+    local eggModel
+    for _, zone in pairs(workspace.Zones:GetChildren()) do
+        local eggsFolder = zone:FindFirstChild("Interactables") and zone.Interactables:FindFirstChild("Eggs")
+        if eggsFolder then
+            for _, model in pairs(eggsFolder:GetChildren()) do
+                if model.Name:lower():find(selectedEgg:lower()) then
+                    eggModel = model
+                    break
+                end
+            end
+            if eggModel then
+                break
+            end
+        end
+    end
+
+    if eggModel then
+        local originalCFrame = humanoidRootPart.CFrame
+        local targetCFrame = eggModel:GetPivot()
+        humanoidRootPart.CFrame = targetCFrame * CFrame.new(0, 0, -5) -- Slightly in front
+
+        -- Teleport back after the specified delay
+        wait(teleportDelay)
+        humanoidRootPart.CFrame = originalCFrame
+    else
+        warn("Egg model not found in workspace: " .. selectedEgg)
+    end
+end
+
 -- Add dropdown to select eggs with search feature
 Tabs.Eggs:AddDropdown("SelectEggDropdown", {
     Title = "Select Egg",
     Values = availableEggs,
     Default = selectedEgg,
-    Search = true,
+    Searchable = true,
     Callback = function(selected)
         selectedEgg = selected
     end
@@ -738,6 +739,8 @@ Tabs.Eggs:AddDropdown("SelectHatchMultiplier", {
     end
 })
 
+
+
 -- Add toggle to start/stop auto-hatching
 Tabs.Eggs:AddToggle("AutoHatchToggle", {
     Title = "Auto Hatch",
@@ -747,10 +750,31 @@ Tabs.Eggs:AddToggle("AutoHatchToggle", {
     end
 })
 
-Tabs.Eggs:AddParagraph({
-    Title = "Must Read",
-    Content = "If you select Max from the hatch multiplier dropdown, it will hatch the maximum amount of eggs that the player can/owns."
+
+
+Tabs.Eggs:AddSection("Auto Delete -- Teleport")
+
+-- Add input to set the delay between teleports
+Tabs.Eggs:AddInput("TeleportDelayInput", {
+    Title = "Teleport back from egg delay",
+    Default = teleportDelay,
+    Placeholder = "Enter teleport back delay",
+    Numeric = true, -- Only allows numbers
+    Finished = false, -- Only calls callback when you press enter
+    Callback = function(value)
+        teleportDelay = tonumber(value) or teleportDelay
+    end
 })
+
+-- Add button to teleport to the selected egg's model world pivot
+Tabs.Eggs:AddButton({
+    Title = "Teleport to Selected Egg (and back)",
+    Description = "Teleport to the selected egg -- If its still a model -- so you can auto delete pets. The teleport input is for how long you will stay at the egg, before teleporting back.",
+    Callback = function()
+        teleportToSelectedEgg()
+    end
+})
+
 
 
 
@@ -1329,13 +1353,63 @@ AutoSpinToggle:OnChanged(function(value)
     end
 end)
 
+-- Create Auto Roll Trainers section
+local TrainersSection = Tabs.Main:AddSection("Auto Roll Trainers")
+
+-- Add toggle to automatically open all trainer crates
+local AutoRollTrainersToggle = TrainersSection:AddToggle("AutoRollTrainers", {
+    Title = "Auto Roll All Crates",
+    Description = "Automatically begings to opens all trainer crates",
+    Default = false
+})
+
+-- Variable to store the loop
+local trainerCrateLoop = nil
+
+AutoRollTrainersToggle:OnChanged(function(value)
+    if value then
+        -- Start auto opening crates
+        trainerCrateLoop = spawn(function()
+            local crates = {
+                "Mythic Crate",
+                "Gold Crate",
+                "Starter Crate",
+                "Premium Crate",
+                "Prism Crate",
+                "Galaxy Crate"
+            }
+
+            while AutoRollTrainersToggle.Value do
+                for _, crate in ipairs(crates) do
+                    local args = {
+                        [1] = crate
+                    }
+                    pcall(function()
+                        game:GetService("ReplicatedStorage").Packages.Knit.Services.TrainerService.RF.OpenCrate:InvokeServer(unpack(args))
+                    end)
+                end
+                
+                -- Wait 1 second before next cycle
+                task.wait(3)
+            end
+        end)
+    else
+        -- Stop the loop
+        if trainerCrateLoop then
+            trainerCrateLoop:Cancel()
+            trainerCrateLoop = nil
+        end
+    end
+end)
+
+
 -- After Tabs declaration
-local CircusSection = Tabs.Main:AddSection("Circus Egg")
+local CircusSection = Tabs.Main:AddSection("Event Egg")
 
 -- Add Auto Circus Egg toggle
 local AutoCircusEggToggle = CircusSection:AddToggle("AutoCircusEgg", {
-    Title = "Auto Claim Circus Egg",
-    Description = "Automatically claims the Circus Egg",
+    Title = "Auto Claim the Event Egg",
+    Description = "Automatically claims the Event Egg",
     Default = false
 })
 
@@ -1348,7 +1422,7 @@ AutoCircusEggToggle:OnChanged(function()
             while AutoCircusEggToggle.Value do
                 game:GetService("ReplicatedStorage").Packages.Knit.Services.EventEggService.RF.Claim:InvokeServer()
 
-                task.wait(300) -- Wait 300 seconds (5 minutes) before claiming again
+                task.wait(30) -- Wait 300 seconds (5 minutes) before claiming again
             end
         end)
     else
@@ -1467,5 +1541,31 @@ local AuraToggle = AuraSection:AddToggle("Auto Roll Aura", {
     end
 })
 
--- Load previously saved configurations
+
+-- InterfaceManager (Allows you to have a interface managment system)
+
+-- Hand the library over to our managers
+SaveManager:SetLibrary(Library)
+InterfaceManager:SetLibrary(Library)
+
+-- Ignore keys that are used by ThemeManager.
+-- (we dont want configs to save themes, do we?)
+SaveManager:IgnoreThemeSettings()
+
+-- You can add indexes of elements the save manager should ignore
+SaveManager:SetIgnoreIndexes{}
+
+-- use case for doing it this way:
+-- a script hub could have themes in a global folder
+-- and game configs in a separate folder per game
+InterfaceManager:SetFolder("FluentScriptHub")
+SaveManager:SetFolder("FluentScriptHub/specific-game")
+
+InterfaceManager:BuildInterfaceSection(Tabs.Settings)
+SaveManager:BuildConfigSection(Tabs.Settings)
+
+Window:SelectTab("Settings")
+
+-- You can use the SaveManager:LoadAutoloadConfig() to load a config
+-- which has been marked to be one that auto loads!
 SaveManager:LoadAutoloadConfig()
