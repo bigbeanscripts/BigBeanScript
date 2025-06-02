@@ -403,7 +403,7 @@ local modelDropdown = Tabs.AutoFight:AddDropdown("ModelDropdown", {
 -- Auto Fight logic
 local AutoFightToggle = Tabs.AutoFight:AddToggle("AutoFight", {
     Title = "Auto Fight",
-    Description = "This is the fastest in the game, beating 5x faster then normal. Turn on the auto fight button on the bottom, to make it even faster (infinite click speed).",
+    Description = "This is the fastest in the game, beating 5x faster then normal. Turn on the auto fight button on the bottom, to make it even faster (infinite click speed). Auto Click and Crit is included when this toggle is on :)",
     Default = false
 })
 
